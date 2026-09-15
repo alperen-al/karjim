@@ -3,7 +3,7 @@ export default function HoursSection({ hours }) {
     <section id="saatler" className="scroll-mt-24 pt-6 pb-20 sm:pt-8 sm:pb-28">
       <div className="mb-10 text-center">
         <p className="font-hud text-xs sm:text-sm tracking-[0.3em] text-neon-blue text-shadow-neon-blue">
-          NE ZAMAN GELSEN VARIZ
+          ERTELEME, HAREKETE GEÇ
         </p>
         <h2 className="mt-2 font-hud text-3xl sm:text-4xl font-bold tracking-wide text-white">
           ÇALIŞMA SAATLERİ
