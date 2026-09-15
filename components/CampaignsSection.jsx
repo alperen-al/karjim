@@ -4,6 +4,12 @@ import { Sparkles, Users, ArrowDown } from "lucide-react";
 import { smoothScrollToId } from "@/lib/smoothScrollTo";
 
 function handleSmoothScrollToContact(event) {
+  // Let modifier/middle clicks fall through to the browser's native
+  // open-in-new-tab/window behavior instead of hijacking them into an
+  // in-page scroll.
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) {
+    return;
+  }
   event.preventDefault();
   smoothScrollToId("iletisim");
 }

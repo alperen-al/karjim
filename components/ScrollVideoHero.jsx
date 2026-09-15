@@ -74,11 +74,8 @@ export default function ScrollVideoHero({ children }) {
 
     const FADE_START = 0.1;
     const EXTRA_LIFT_PX = 60;
-    let running = true;
 
-    const loop = () => {
-      if (!running) return;
-
+    const updateFrame = () => {
       const rect = container.getBoundingClientRect();
       if (rect.height > 0) {
         const progress = Math.min(Math.max(-rect.top / rect.height, 0), 1);
@@ -88,15 +85,33 @@ export default function ScrollVideoHero({ children }) {
         media.style.transform = `translateY(${-fade * EXTRA_LIFT_PX}px)`;
         container.style.setProperty("--reveal", String(fade));
       }
-
-      rafRef.current = requestAnimationFrame(loop);
+      rafRef.current = requestAnimationFrame(updateFrame);
     };
 
-    rafRef.current = requestAnimationFrame(loop);
+    const startLoop = () => {
+      if (rafRef.current === null) rafRef.current = requestAnimationFrame(updateFrame);
+    };
+    const stopLoop = () => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+
+    // Only run the per-frame fade loop while the hero is anywhere near the
+    // viewport - once the visitor has scrolled well past it (e.g. down at
+    // Contact), there's nothing left to animate and no reason to keep
+    // forcing a layout read 60 times a second for as long as the tab
+    // stays open (real battery/CPU cost on mobile).
+    const observer = new IntersectionObserver(
+      ([entry]) => (entry.isIntersecting ? startLoop() : stopLoop()),
+      { rootMargin: "100% 0px 100% 0px" }
+    );
+    observer.observe(container);
 
     return () => {
-      running = false;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      observer.disconnect();
+      stopLoop();
     };
   }, []);
 
@@ -131,7 +146,14 @@ export default function ScrollVideoHero({ children }) {
             alt="KarJim Spor Merkezi"
             fill
             sizes="100vw"
-            priority={index === 0}
+            // Eager (not `priority`, which would also compete with the
+            // video for bandwidth on first paint): fetches quietly in the
+            // background from mount instead of waiting for the element to
+            // become visible, since a `display:none` slide never counts
+            // as "on screen" for the default lazy loader - without this,
+            // the first time someone taps an arrow they'd see a blank
+            // slide until that image's request even starts.
+            loading="eager"
             className="object-cover"
             style={{ display: slide === index + 1 ? "block" : "none" }}
           />
