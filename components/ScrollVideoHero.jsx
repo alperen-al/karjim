@@ -140,7 +140,7 @@ export default function ScrollVideoHero({ children }) {
         type="button"
         onClick={() => smoothScrollToId("kampanyalar")}
         aria-label="Kampanyalara git"
-        className="absolute bottom-6 left-1/2 z-20 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-neon-blue/30 bg-zinc-950/50 text-neon-blue backdrop-blur transition-colors hover:bg-neon-blue/10"
+        className="absolute bottom-24 left-1/2 z-20 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-neon-blue/30 bg-zinc-950/50 text-neon-blue backdrop-blur transition-colors hover:bg-neon-blue/10 sm:bottom-6"
       >
         <ChevronDown className="h-6 w-6" />
       </button>
