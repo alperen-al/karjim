@@ -1,35 +1,11 @@
 "use client";
 
 import { Sparkles, Users, ArrowDown } from "lucide-react";
-
-// CSS `scroll-behavior: smooth` isn't reliable across mobile browsers
-// (older Safari in particular), so this button drives its own
-// requestAnimationFrame scroll instead of leaving it to the browser -
-// guarantees the same smooth, eased motion everywhere.
-const SCROLL_DURATION_MS = 700;
-
-function easeInOutQuad(t) {
-  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
+import { smoothScrollToId } from "@/lib/smoothScrollTo";
 
 function handleSmoothScrollToContact(event) {
   event.preventDefault();
-  const target = document.getElementById("iletisim");
-  if (!target) return;
-
-  const startY = window.scrollY;
-  const endY = target.getBoundingClientRect().top + startY;
-  const distance = endY - startY;
-  const startTime = performance.now();
-
-  const step = (now) => {
-    const elapsed = now - startTime;
-    const t = Math.min(elapsed / SCROLL_DURATION_MS, 1);
-    window.scrollTo(0, startY + distance * easeInOutQuad(t));
-    if (t < 1) requestAnimationFrame(step);
-  };
-
-  requestAnimationFrame(step);
+  smoothScrollToId("iletisim");
 }
 
 export default function CampaignsSection({ campaigns }) {

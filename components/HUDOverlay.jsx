@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Crosshair } from "lucide-react";
+import { Crosshair } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
 
 function CornerBracket({ position }) {
@@ -42,15 +41,6 @@ function Readout({ icon: Icon, label, value, align = "left" }) {
 }
 
 export default function HUDOverlay() {
-  const [showScrollHint, setShowScrollHint] = useState(true);
-
-  useEffect(() => {
-    const onScroll = () => setShowScrollHint(window.scrollY < 80);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
     <div
       className="pointer-events-none absolute inset-0 select-none overflow-hidden"
@@ -108,23 +98,6 @@ export default function HUDOverlay() {
           {siteConfig.brand.slogan}
         </motion.p>
       </div>
-
-      {/* Scroll ipucu */}
-      <motion.div
-        animate={{ opacity: showScrollHint ? 1 : 0 }}
-        transition={{ duration: 0.4 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
-      >
-        <span className="font-hud text-[10px] tracking-[0.4em] text-neon-blue text-shadow-neon-blue">
-          AŞAĞI KAYDIR
-        </span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity }}
-        >
-          <ChevronDown className="h-5 w-5 text-neon-blue" />
-        </motion.div>
-      </motion.div>
     </div>
   );
 }
