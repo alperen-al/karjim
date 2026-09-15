@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
+  /* Matches Tailwind's zinc-950, used everywhere else (root wrapper, hero,
+     cards) - kept identical so there's never a shade seam where the body's
+     own background peeks through (e.g. mobile overscroll bounce). */
+  --background: #09090b;
   --foreground: #f4f4f5;
   --neon-blue: #00f3ff;
   --neon-orange: #ff6b00;

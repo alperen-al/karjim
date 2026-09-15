@@ -21,7 +21,7 @@ export default function ScrollVideoHero({ children, revealContent }) {
     const video = videoRef.current;
     if (!container || !video) return;
 
-    const FADE_START = 0.4;
+    const FADE_START = 0.7;
 
     const updateFrame = () => {
       rafRef.current = null;
