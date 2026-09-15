@@ -1,6 +1,6 @@
 export default function HoursSection({ hours }) {
   return (
-    <section id="saatler" className="scroll-mt-24 pt-6 pb-20 sm:pt-8 sm:pb-28">
+    <section id="saatler" className="scroll-mt-24 pt-16 pb-20 sm:pt-24 sm:pb-28">
       <div className="mb-10 text-center">
         <p className="font-hud text-xs sm:text-sm tracking-[0.3em] text-neon-blue text-shadow-neon-blue">
           ERTELEME, HAREKETE GEÇ
