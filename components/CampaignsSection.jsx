@@ -1,16 +1,41 @@
+"use client";
+
 import { Sparkles, Users, ArrowDown } from "lucide-react";
 
-// `compact` renders this as the crossfade overlay living on top of the
-// hero video (ScrollVideoHero passes it as `revealContent`): tighter
-// spacing to fit one screen, and no whileInView animation since opacity
-// there is already driven by the video's own fade progress.
-export default function CampaignsSection({ campaigns, compact = false }) {
+// CSS `scroll-behavior: smooth` isn't reliable across mobile browsers
+// (older Safari in particular), so this button drives its own
+// requestAnimationFrame scroll instead of leaving it to the browser -
+// guarantees the same smooth, eased motion everywhere.
+const SCROLL_DURATION_MS = 700;
+
+function easeInOutQuad(t) {
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+
+function handleSmoothScrollToContact(event) {
+  event.preventDefault();
+  const target = document.getElementById("iletisim");
+  if (!target) return;
+
+  const startY = window.scrollY;
+  const endY = target.getBoundingClientRect().top + startY;
+  const distance = endY - startY;
+  const startTime = performance.now();
+
+  const step = (now) => {
+    const elapsed = now - startTime;
+    const t = Math.min(elapsed / SCROLL_DURATION_MS, 1);
+    window.scrollTo(0, startY + distance * easeInOutQuad(t));
+    if (t < 1) requestAnimationFrame(step);
+  };
+
+  requestAnimationFrame(step);
+}
+
+export default function CampaignsSection({ campaigns }) {
   return (
-    <section
-      id={compact ? undefined : "kampanyalar"}
-      className={compact ? "px-4" : "scroll-mt-24 py-20 sm:py-28"}
-    >
-      <div className={compact ? "mb-6 text-center" : "mb-10 text-center"}>
+    <section id="kampanyalar" className="scroll-mt-24 py-20 sm:py-28">
+      <div className="mb-10 text-center">
         <p className="font-hud text-xs sm:text-sm tracking-[0.3em] text-neon-orange text-shadow-neon-orange">
           KAÇIRMA
         </p>
@@ -23,9 +48,7 @@ export default function CampaignsSection({ campaigns, compact = false }) {
         {campaigns.map((campaign, index) => (
           <div
             key={index}
-            className={`group relative w-full max-w-sm overflow-hidden rounded-2xl border border-neon-blue/30 bg-zinc-900/60 shadow-[0_0_25px_rgba(0,243,255,0.12)] transition-shadow hover:shadow-[0_0_35px_rgba(0,243,255,0.3)] ${
-              compact ? "p-5" : "p-6 sm:p-8"
-            }`}
+            className="group relative w-full max-w-sm overflow-hidden rounded-2xl border border-neon-blue/30 bg-zinc-900/60 p-6 sm:p-8 shadow-[0_0_25px_rgba(0,243,255,0.12)] transition-shadow hover:shadow-[0_0_35px_rgba(0,243,255,0.3)]"
           >
             <div className="absolute inset-0 border border-transparent [background:linear-gradient(135deg,rgba(0,243,255,0.08),transparent_40%,rgba(255,107,0,0.08))]" />
 
@@ -54,6 +77,7 @@ export default function CampaignsSection({ campaigns, compact = false }) {
 
               <a
                 href="#iletisim"
+                onClick={handleSmoothScrollToContact}
                 className="mt-2 flex items-center justify-center gap-2 rounded-xl border border-neon-orange/40 bg-neon-orange/10 px-4 py-3 font-hud text-sm tracking-wide text-neon-orange text-shadow-neon-orange transition-colors hover:bg-neon-orange/20"
               >
                 Bize Ulaşın, Kayıt Olun

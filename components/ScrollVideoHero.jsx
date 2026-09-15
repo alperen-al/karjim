@@ -3,19 +3,19 @@
 import { useEffect, useRef } from "react";
 import FogLayer from "@/components/FogLayer";
 
-export default function ScrollVideoHero({ children, revealContent }) {
+export default function ScrollVideoHero({ children }) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const rafRef = useRef(null);
 
   // The video just plays continuously on its own (autoPlay + loop) - scroll
-  // no longer scrubs its currentTime. Scroll only drives a fade: `progress`
-  // (0..1) covers the sticky pin itself, and starting the fade partway
-  // through (FADE_START) means it's already darkening while still playing.
-  // Both the fade-out and `revealContent` fading in on top of it (via
-  // --reveal) finish exactly at progress===1, i.e. while the video is
-  // STILL pinned/on screen - so the reveal is fully visible before any
-  // further scrolling carries the (by-then-empty) hero away.
+  // no longer scrubs its currentTime. Scroll only drives a fade-out
+  // (`progress`, 0..1, covers the sticky pin itself): starting earlier and
+  // stretching it across most of the pin (FADE_START) makes it a slow,
+  // gradual dissolve rather than an abrupt one, while still finishing
+  // (fully transparent) exactly at progress===1 - the end point stays put,
+  // only the start moves earlier. --reveal (1 at that same end point) is
+  // used by HUDOverlay to fade the HUD out in step with the video.
   //
   // This reads scroll position in a self-driving requestAnimationFrame
   // loop instead of only reacting to the 'scroll' event. Mobile browsers
@@ -29,7 +29,7 @@ export default function ScrollVideoHero({ children, revealContent }) {
     const video = videoRef.current;
     if (!container || !video) return;
 
-    const FADE_START = 0.65;
+    const FADE_START = 0.3;
     let running = true;
 
     const loop = () => {
@@ -60,7 +60,7 @@ export default function ScrollVideoHero({ children, revealContent }) {
     <div ref={containerRef} className="relative isolate h-[190dvh]">
       <div className="sticky top-0 h-dvh w-full overflow-hidden bg-zinc-950">
         {/* Sits below the (opaque, while playing) video - only becomes
-            visible once the video fades out, right alongside revealContent. */}
+            visible once the video fades out. */}
         <FogLayer className="absolute inset-0" />
 
         <video
@@ -77,22 +77,6 @@ export default function ScrollVideoHero({ children, revealContent }) {
         </video>
 
         {children}
-
-        {/* Fades in on top of the video as it darkens (driven by --reveal,
-            set above) - so the next section is already fully in place, on
-            screen, superimposed on the hero, by the time the video is gone.
-            No separate scroll is needed to "reach" it afterward. */}
-        {revealContent && (
-          <div
-            className="pointer-events-none absolute inset-0 flex items-end justify-center pb-6 sm:pb-10 will-change-[opacity,transform]"
-            style={{
-              opacity: "var(--reveal, 0)",
-              transform: "translateY(calc((1 - var(--reveal, 0)) * 24px))",
-            }}
-          >
-            <div className="pointer-events-auto w-full">{revealContent}</div>
-          </div>
-        )}
       </div>
     </div>
   );

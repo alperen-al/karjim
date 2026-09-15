@@ -14,13 +14,12 @@ export default function Home() {
 
       <QuickAccessBar />
 
-      <ScrollVideoHero
-        revealContent={<CampaignsSection campaigns={siteConfig.campaigns} compact />}
-      >
+      <ScrollVideoHero>
         <HUDOverlay />
       </ScrollVideoHero>
 
       <main className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <CampaignsSection campaigns={siteConfig.campaigns} />
         <HoursSection hours={siteConfig.workingHours} />
         <ContactSection contact={siteConfig.contact} />
       </main>
