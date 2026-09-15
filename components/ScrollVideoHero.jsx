@@ -1,47 +1,50 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import FogLayer from "@/components/FogLayer";
 
+// A normal-flow block (not position:sticky) that sits right at the top of
+// <main>, sharing the same document flow and the same single page-level
+// FogLayer as everything below it. An earlier version pinned this in a
+// tall separate panel with its own internal fog layer - that produced a
+// visible seam where the two independent fog patterns met. Plain flow
+// avoids that entirely: there's only ever one fog layer, so there's
+// nothing to seam.
+//
+// The video plays continuously (autoPlay + loop). As the user scrolls it
+// out of view, it fades (starting almost immediately, `FADE_START`) and
+// drifts up slightly beyond its natural scroll motion, so it reads as
+// dissolving away rather than just plainly scrolling off - and the next
+// section arrives right underneath with no big empty gap, since this is
+// just a normal `h-dvh` block, not an oversized pinned one.
 export default function ScrollVideoHero({ children }) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const rafRef = useRef(null);
 
-  // The video just plays continuously on its own (autoPlay + loop) - scroll
-  // no longer scrubs its currentTime. Scroll only drives a fade-out
-  // (`progress`, 0..1, covers the sticky pin itself): starting earlier and
-  // stretching it across most of the pin (FADE_START) makes it a slow,
-  // gradual dissolve rather than an abrupt one, while still finishing
-  // (fully transparent) exactly at progress===1 - the end point stays put,
-  // only the start moves earlier. --reveal (1 at that same end point) is
-  // used by HUDOverlay to fade the HUD out in step with the video.
-  //
-  // This reads scroll position in a self-driving requestAnimationFrame
-  // loop instead of only reacting to the 'scroll' event. Mobile browsers
-  // often coalesce/throttle scroll events during momentum scrolling (they
-  // can fire as infrequently as a handful of times per second), which
-  // made the fade visibly stepped/choppy. Sampling every animation frame
-  // regardless decouples the visual update rate from that and keeps it
-  // smooth at the display's real refresh rate.
+  // Reads scroll position in a self-driving requestAnimationFrame loop
+  // instead of only reacting to the 'scroll' event, since mobile browsers
+  // often coalesce/throttle scroll events during momentum scrolling -
+  // sampling every frame keeps the fade smooth at the display refresh
+  // rate instead of visibly stepping.
   useEffect(() => {
     const container = containerRef.current;
     const video = videoRef.current;
     if (!container || !video) return;
 
-    const FADE_START = 0.3;
+    const FADE_START = 0.1;
+    const EXTRA_LIFT_PX = 60;
     let running = true;
 
     const loop = () => {
       if (!running) return;
 
       const rect = container.getBoundingClientRect();
-      const scrollableHeight = rect.height - window.innerHeight;
-      if (scrollableHeight > 0) {
-        const progress = Math.min(Math.max(-rect.top / scrollableHeight, 0), 1);
+      if (rect.height > 0) {
+        const progress = Math.min(Math.max(-rect.top / rect.height, 0), 1);
         const fade =
           Math.min(Math.max((progress - FADE_START) / (1 - FADE_START), 0), 1);
         video.style.opacity = String(1 - fade);
+        video.style.transform = `translateY(${-fade * EXTRA_LIFT_PX}px)`;
         container.style.setProperty("--reveal", String(fade));
       }
 
@@ -57,27 +60,21 @@ export default function ScrollVideoHero({ children }) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative isolate h-[190dvh]">
-      <div className="sticky top-0 h-dvh w-full overflow-hidden bg-zinc-950">
-        {/* Sits below the (opaque, while playing) video - only becomes
-            visible once the video fades out. */}
-        <FogLayer className="absolute inset-0" />
+    <div ref={containerRef} className="relative h-dvh w-full overflow-hidden">
+      <video
+        ref={videoRef}
+        src="/hero.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 h-full w-full object-cover will-change-[opacity,transform]"
+      >
+        Tarayıcınız video etiketini desteklemiyor.
+      </video>
 
-        <video
-          ref={videoRef}
-          src="/hero.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 h-full w-full object-cover will-change-[opacity]"
-        >
-          Tarayıcınız video etiketini desteklemiyor.
-        </video>
-
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
