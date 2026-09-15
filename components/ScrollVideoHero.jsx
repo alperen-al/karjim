@@ -36,8 +36,36 @@ const SLIDE_COUNT = GALLERY_IMAGES.length + 1;
 export default function ScrollVideoHero({ children }) {
   const containerRef = useRef(null);
   const mediaRef = useRef(null);
+  const videoRef = useRef(null);
   const rafRef = useRef(null);
   const [slide, setSlide] = useState(0);
+
+  // Mobile browsers pause background video when the tab/app is backgrounded
+  // (switching to the phone app, Instagram, Maps, etc.) and don't always
+  // resume it automatically once the page is visible again - it can be
+  // left sitting on a frozen frame. Explicitly resume playback whenever
+  // the page becomes visible again.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const resumeIfNeeded = () => {
+      if (document.visibilityState === "visible" && video.paused) {
+        video.play().catch(() => {
+          // Autoplay can still be blocked in rare cases - not fatal, the
+          // visible (paused) frame is a reasonable fallback.
+        });
+      }
+    };
+
+    document.addEventListener("visibilitychange", resumeIfNeeded);
+    window.addEventListener("pageshow", resumeIfNeeded);
+
+    return () => {
+      document.removeEventListener("visibilitychange", resumeIfNeeded);
+      window.removeEventListener("pageshow", resumeIfNeeded);
+    };
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -83,6 +111,7 @@ export default function ScrollVideoHero({ children }) {
             the background and is exactly where it left off when the
             visitor flips back to slide 0. */}
         <video
+          ref={videoRef}
           src="/hero.mp4"
           autoPlay
           loop
