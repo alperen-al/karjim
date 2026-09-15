@@ -30,41 +30,8 @@ body {
   text-shadow: 0 0 8px rgba(255, 107, 0, 0.8), 0 0 16px rgba(255, 107, 0, 0.4);
 }
 
-/* İnce, dalgalı duman çizgileri - açık havada dağılan sigara dumanı gibi
-   yavaşça sağa/sola kayıp hafifçe dalgalanır. Her çizgi farklı süre ve
-   genlikte hareket eder ki senkronize/mekanik görünmesin. */
-@keyframes smoke-sway-a {
-  0%   { transform: translate(-3%, 0%) scaleY(1); }
-  25%  { transform: translate(2%, -4%) scaleY(1.12); }
-  50%  { transform: translate(6%, 1%) scaleY(0.94); }
-  75%  { transform: translate(1%, 5%) scaleY(1.08); }
-  100% { transform: translate(-3%, 0%) scaleY(1); }
-}
-
-@keyframes smoke-sway-b {
-  0%   { transform: translate(4%, 2%) scaleY(1); }
-  30%  { transform: translate(-2%, -3%) scaleY(0.9); }
-  60%  { transform: translate(-6%, 3%) scaleY(1.1); }
-  100% { transform: translate(4%, 2%) scaleY(1); }
-}
-
-.smoke-wisp {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.smoke-wisp-a {
-  animation: smoke-sway-a 46s ease-in-out infinite;
-}
-
-.smoke-wisp-b {
-  animation: smoke-sway-b 38s ease-in-out infinite;
-}
-
-.smoke-wisp-c {
-  animation: smoke-sway-a 52s ease-in-out infinite reverse;
-}
-
-.smoke-wisp-d {
-  animation: smoke-sway-b 60s ease-in-out infinite;
+/* Smooth-scrolls to in-page anchors (e.g. the campaign card's "Bize Ulaş"
+   button jumping down to #iletisim). */
+html {
+  scroll-behavior: smooth;
 }

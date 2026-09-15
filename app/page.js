@@ -20,7 +20,7 @@ export default function Home() {
         <HUDOverlay />
       </ScrollVideoHero>
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <main className="relative z-10 -mt-px mx-auto max-w-6xl bg-zinc-950 px-4 sm:px-6 lg:px-8">
         <HoursSection hours={siteConfig.workingHours} />
         <ContactSection contact={siteConfig.contact} />
       </main>

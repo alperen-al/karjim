@@ -3,9 +3,32 @@
 // in open air. Purely visual, so it stays out of the accessibility tree
 // and never blocks clicks/taps.
 //
+// The drift uses native SVG <animateTransform> (SMIL) rather than a CSS
+// transform, since CSS transforms on individual SVG <path> elements need
+// `transform-box: fill-box`, which some mobile browsers still handle
+// inconsistently - SMIL animation is interpreted directly by the SVG
+// engine and reliably animates everywhere.
+//
 // `className` must include a position utility (e.g. "fixed" or "absolute")
 // plus inset-0 and a z-index - left to the caller since that depends on
 // the surrounding stacking context.
+function Wisp({ d, color, width, values, dur }) {
+  return (
+    <path d={d} fill="none" stroke={color} strokeWidth={width} strokeLinecap="round">
+      <animateTransform
+        attributeName="transform"
+        type="translate"
+        values={values}
+        dur={dur}
+        repeatCount="indefinite"
+        calcMode="spline"
+        keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"
+        keyTimes="0;0.33;0.66;1"
+      />
+    </path>
+  );
+}
+
 export default function FogLayer({ className = "" }) {
   return (
     <div
@@ -23,37 +46,33 @@ export default function FogLayer({ className = "" }) {
           </filter>
         </defs>
         <g filter="url(#smoke-blur)">
-          <path
-            className="smoke-wisp smoke-wisp-a"
+          <Wisp
             d="M -100 260 C 80 200, 180 340, 360 280 S 640 160, 820 260 S 1100 200, 1300 260"
-            fill="none"
-            stroke="rgba(210,212,218,0.5)"
-            strokeWidth="5"
-            strokeLinecap="round"
+            color="rgba(210,212,218,0.5)"
+            width="5"
+            values="-30,0; 25,-18; -10,10; -30,0"
+            dur="46s"
           />
-          <path
-            className="smoke-wisp smoke-wisp-b"
+          <Wisp
             d="M -100 460 C 100 400, 260 540, 460 460 S 760 360, 960 470 S 1220 400, 1400 460"
-            fill="none"
-            stroke="rgba(200,205,212,0.4)"
-            strokeWidth="4"
-            strokeLinecap="round"
+            color="rgba(200,205,212,0.4)"
+            width="4"
+            values="20,10; -25,-14; 10,16; 20,10"
+            dur="38s"
           />
-          <path
-            className="smoke-wisp smoke-wisp-c"
+          <Wisp
             d="M -100 120 C 90 70, 220 190, 420 130 S 700 40, 900 140 S 1180 80, 1360 130"
-            fill="none"
-            stroke="rgba(220,222,226,0.35)"
-            strokeWidth="3.5"
-            strokeLinecap="round"
+            color="rgba(220,222,226,0.35)"
+            width="3.5"
+            values="-15,-8; 20,12; -25,4; -15,-8"
+            dur="52s"
           />
-          <path
-            className="smoke-wisp smoke-wisp-d"
+          <Wisp
             d="M -100 620 C 110 570, 250 690, 440 630 S 720 540, 940 640 S 1200 580, 1380 630"
-            fill="none"
-            stroke="rgba(205,208,214,0.3)"
-            strokeWidth="4.5"
-            strokeLinecap="round"
+            color="rgba(205,208,214,0.3)"
+            width="4.5"
+            values="25,6; -20,-16; 15,10; 25,6"
+            dur="60s"
           />
         </g>
       </svg>

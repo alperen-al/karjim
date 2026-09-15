@@ -1,4 +1,4 @@
-import { Sparkles, Users } from "lucide-react";
+import { Sparkles, Users, ArrowDown } from "lucide-react";
 
 // `compact` renders this as the crossfade overlay living on top of the
 // hero video (ScrollVideoHero passes it as `revealContent`): tighter
@@ -51,6 +51,14 @@ export default function CampaignsSection({ campaigns, compact = false }) {
                 <Users className="h-4 w-4 shrink-0 text-neon-blue" />
                 <span>{campaign.friendOffer}</span>
               </div>
+
+              <a
+                href="#iletisim"
+                className="mt-2 flex items-center justify-center gap-2 rounded-xl border border-neon-orange/40 bg-neon-orange/10 px-4 py-3 font-hud text-sm tracking-wide text-neon-orange text-shadow-neon-orange transition-colors hover:bg-neon-orange/20"
+              >
+                Bize Ulaşın, Kayıt Olun
+                <ArrowDown className="h-4 w-4" />
+              </a>
             </div>
           </div>
         ))}
